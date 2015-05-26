@@ -11,7 +11,7 @@ public class ReadFile {
 	public StringBuilder stringContainer;
 	public StringBuilder getString(){
 		stringContainer=new StringBuilder();
-		File file=new File("C:/Users/Administrator/Desktop/virtualExpert/软件杯/data/文献.txt");		
+		File file=new File("C:/Users/Administrator/Desktop/virtualExpert/lab/软件杯/dataResult/文献2.txt");		
 		try {
 			InputStreamReader read = new InputStreamReader(new FileInputStream(file),"utf-8");
 			BufferedReader reader = new BufferedReader(read);

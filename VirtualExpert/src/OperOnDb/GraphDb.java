@@ -31,7 +31,7 @@ public abstract class GraphDb {
 	}
 
 	public static enum RelTypes implements RelationshipType {
-		COOPRERATOR,SAMEAREA
+		COOPRERATOR,SAMEAREA,WRITE
 
 	}
 	public static void startDb() {
@@ -53,27 +53,6 @@ public abstract class GraphDb {
 		}
 		try (Transaction tx = graphDb.beginTx()) {
 			Schema schema = graphDb.schema();
-			indexDefinition = schema.indexFor(DynamicLabel.label("method"))
-					.on("methodName").create();
-			tx.success();
-		}
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
-		}
-
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			indexDefinition = schema.indexFor(DynamicLabel.label("project"))
-					.on("projectName").create();
-			tx.success();
-		}
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
-			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
-		}
-		try (Transaction tx = graphDb.beginTx()) {
-			Schema schema = graphDb.schema();
 			indexDefinition = schema.indexFor(DynamicLabel.label("index"))
 					.on("index").create();
 			tx.success();
@@ -84,8 +63,8 @@ public abstract class GraphDb {
 		}
 		try (Transaction tx = graphDb.beginTx()) {
 			Schema schema = graphDb.schema();
-			indexDefinition = schema.indexFor(DynamicLabel.label("prIndex"))
-					.on("prIndex").create();
+			indexDefinition = schema.indexFor(DynamicLabel.label("paper"))
+					.on("abs").create();
 			tx.success();
 		}
 		try (Transaction tx = graphDb.beginTx()) {

@@ -1,25 +1,28 @@
 package Entity;
 
+import java.util.ArrayList;
+
 public class ExpertNode implements Node{
 	String expertName;
-	String unit;
+	String [] units;
 	String expert_org;
-	public ExpertNode(String expertName,String unit,String expert_org){
+	public ExpertNode(String expertName,String[] units,String expert_org){
 		this.expertName=expertName;
-		this.unit=unit;
+		this.units=units;
 		this.expert_org=expert_org;
 	}
 	public String toString(){
-		return this.unit+"--"+this.expert_org+"--"+this.expertName;
+		return this.units+"--"+this.expert_org+"--"+this.expertName;
 	}
 	public int hashCode(){
+		//¸øtextIdÁô¿Õ¼ä
 		return this.expertName.hashCode();
 	}
 	public String getExpertName(){
 		return this.expertName;
 	}
-	public String getUnit(){
-		return this.unit;
+	public String[] getUnits(){
+		return this.units;
 	}
 	public String getExpert_org(){
 		return this.expert_org;
