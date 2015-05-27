@@ -1,9 +1,13 @@
 package EntityConstruct;
 
+import index.Createindex;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,6 +33,7 @@ import OperOnDb.GraphDb;
 import Relationship.RelMap;
 
 public class ParseText extends GraphDb {
+	Createindex cindex=new Createindex();
 	ExpertNodeMap expertMap;
 	PaperNodeMap paperMap;
 	RelMap writeRel;
@@ -110,8 +115,15 @@ public class ParseText extends GraphDb {
 					keys.add(subkey);
 					values.add(TFIDF);					
 					// System.out.println(subkey+":"+subvalue);
-				}
+				}				
 			}
+			Double sum=0.0;
+			for(Double temp:values){
+				sum+=temp*temp;
+			}
+			sum=Math.sqrt(sum);
+			keys.add("keyModel");
+			values.add(sum);
 			final int keysSize = keys.size();
 			final int valuesSize = values.size();
 			String[] keyArray = keys.toArray(new String[keysSize]);
@@ -165,16 +177,24 @@ public class ParseText extends GraphDb {
 
 	// @Test
 	public static void main(String[] argvs) throws IOException {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		ParseText test = new ParseText();
+		System.out.println("开始分析文本"+df.format(new Date()));
 		test.parseText();
 		GraphDb.deleteFileOrDirectory(new File(GraphDb.DB_PATH));
 		GraphDb.startDb();
 		GraphDb.prepare();
+		System.out.println("开始存专家节点"+df.format(new Date()));
 		test.createExpertNodeInDb();
+		System.out.println("开始存文献节点"+df.format(new Date()));
 		test.createPaperNodeInDb();
+		System.out.println("开始创建关系"+df.format(new Date()));
 		test.createCooperatorRel();
+		System.out.println("开始创建写者关系"+df.format(new Date()));
 		test.createWriteRel();
+		System.out.println("开始计算tfidf"+df.format(new Date()));
 		test.setTFIDF();
+		System.out.println("计算结束"+df.format(new Date()));
 	}
 
 	public void createExpertNodeInDb() {
@@ -211,7 +231,7 @@ public class ParseText extends GraphDb {
 			org.neo4j.graphdb.Node newNode = null;
 			// Create some nodes
 			for (PaperNode iter : paperMap.getAllNodes()) {
-				System.out.println("create paper:"+iter.hashCode());
+				//System.out.println("create paper:"+iter.hashCode());
 				newNode = null;
 				for (org.neo4j.graphdb.Node node : graphDb
 						.findNodesByLabelAndProperty(labelIndex, "paperIndex",
@@ -287,7 +307,7 @@ public class ParseText extends GraphDb {
 				}
 				tempWriterNode.createRelationshipTo(tempPaperNode,
 						RelTypes.WRITE);
-				System.out.println("create write rel:"+iter.getNode1Index()+"-->:"+iter.getNode2Index());
+				//System.out.println("create write rel:"+iter.getNode1Index()+"-->:"+iter.getNode2Index());
 			}
 			tx.success();
 		}
@@ -348,7 +368,7 @@ public class ParseText extends GraphDb {
 				Integer expertStart = textUnit.indexOf("expert_org");
 				expert_org = textUnit.substring(expertStart + 15,
 						textUnit.length() - 3);
-				System.out.println(expert_org);
+				//System.out.println(expert_org);
 				// delete parsed text
 			} else if (local2 < local1) {
 				abs = getTextDetail("\"abs\"", "\"author_cn\"", textUnit);
@@ -373,7 +393,7 @@ public class ParseText extends GraphDb {
 				expert_org = textUnit.substring(expertStart + 15,
 						textUnit.length() - 3);
 
-				System.out.println(expert_org);
+				//System.out.println(expert_org);
 				// delete parsed text
 			} else {
 				// get title
@@ -398,7 +418,7 @@ public class ParseText extends GraphDb {
 				Integer expertStart = textUnit.indexOf("expert_org");
 				expert_org = textUnit.substring(expertStart + 15,
 						textUnit.length() - 3);
-				System.out.println(expert_org);
+				//System.out.println(expert_org);
 				// delete parsed text
 			}
 			fenci(textId, key);
@@ -415,11 +435,10 @@ public class ParseText extends GraphDb {
 			String[] experts = author_cn.split(";");
 			for (int i = 0; i < experts.length; i++) {
 				experts[i] = experts[i].replaceAll(" ", "");
-				//删除[]
-				
-				
-				
-				
+				int tempindex=experts[i].indexOf("[");
+				if(tempindex!=-1)
+					experts[i]=experts[i].substring(0,tempindex-1);				
+								
 				ExpertNode expert = new ExpertNode(experts[i], units,
 						expert_org);
 				if (expertMap.checkNodeExist(experts[i])) {
@@ -435,12 +454,14 @@ public class ParseText extends GraphDb {
 							experts[j].hashCode());
 				}
 			}
+			cindex.add(textId, expert_name, textUnit);
 			PaperNode paper = new PaperNode(expert_name, units, expert_org,
 					abs, experts, null, journal_cn, app_date, title, textId);
 			paperMap.addNode(paper);
 			textId++;
 			stringContainer.delete(0, end + 3);
 		}
+		System.out.println("textNum:"+textId);
 	}
 
 	public String getTextDetail(String startStr, String endStr, String baseStr) {
@@ -448,7 +469,7 @@ public class ParseText extends GraphDb {
 		Integer start = baseStr.indexOf(startStr);
 		Integer end = baseStr.indexOf(endStr);
 		result = baseStr.substring(start + startStr.length() + 4, end - 6);
-		System.out.println(result);
+		//System.out.println(result);
 		baseStr = baseStr.substring(end, baseStr.length());
 		return result;
 	}
