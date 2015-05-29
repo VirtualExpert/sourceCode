@@ -31,7 +31,7 @@ public abstract class GraphDb {
 	}
 
 	public static enum RelTypes implements RelationshipType {
-		COOPRERATOR,SAMEAREA,WRITE
+		COOPRERATOR,WRITE,SAME
 
 	}
 	public static void startDb() {
@@ -53,8 +53,18 @@ public abstract class GraphDb {
 		}
 		try (Transaction tx = graphDb.beginTx()) {
 			Schema schema = graphDb.schema();
-			indexDefinition = schema.indexFor(DynamicLabel.label("index"))
-					.on("index").create();
+			indexDefinition = schema.indexFor(DynamicLabel.label("expertIndex"))
+					.on("expertIndex").create();
+			tx.success();
+		}
+		try (Transaction tx = graphDb.beginTx()) {
+			Schema schema = graphDb.schema();
+			schema.awaitIndexOnline(indexDefinition, 10, TimeUnit.SECONDS);
+		}
+		try (Transaction tx = graphDb.beginTx()) {
+			Schema schema = graphDb.schema();
+			indexDefinition = schema.indexFor(DynamicLabel.label("paperIndex"))
+					.on("paperIndex").create();
 			tx.success();
 		}
 		try (Transaction tx = graphDb.beginTx()) {

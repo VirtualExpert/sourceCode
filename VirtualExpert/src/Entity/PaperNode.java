@@ -8,7 +8,7 @@ public class PaperNode implements Node {
 	String expert_org;
 	String abs;
 	String [] author_cn;
-	HashMap<String,Double> mainkeys;
+	String keys[];
 	String journal_cn;
 	String app_date;
 	String title;
@@ -16,7 +16,7 @@ public class PaperNode implements Node {
 
 	
 	public PaperNode(String expertName,String[] units,
-			String expert_org,String abs,String author_cn[],HashMap<String,Double> mainKeys,
+			String expert_org,String abs,String author_cn[],String keys[],
 			String journal_cn,String app_date,String title,Integer textId){
 		this.expertName=expertName;
 		this.units=units;
@@ -24,7 +24,7 @@ public class PaperNode implements Node {
 		this.app_date=app_date;
 		this.abs=abs;
 		this.author_cn=author_cn;
-		this.mainkeys=mainKeys;
+		this.keys=keys;
 		this.journal_cn=journal_cn;
 		this.title=title;	
 		this.textId=textId;
@@ -59,11 +59,11 @@ public class PaperNode implements Node {
 	public void setAuthor_cn(String[] author_cn) {
 		this.author_cn = author_cn;
 	}
-	public HashMap<String, Double> getMainkeys() {
-		return mainkeys;
+	public String[] getMainkeys() {
+		return keys;
 	}
-	public void setMainkeys(HashMap<String, Double> mainkeys) {
-		this.mainkeys = mainkeys;
+	public void setMainkeys(String keys[]) {
+		this.keys=keys;
 	}
 	public String getJournal_cn() {
 		return journal_cn;

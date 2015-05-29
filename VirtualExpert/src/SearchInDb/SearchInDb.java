@@ -46,7 +46,7 @@ public abstract class SearchInDb {
 	}
 
 	public static enum RelTypes implements RelationshipType {
-		COOPRERATOR,SAMEAREA,WRITE
+		COOPRERATOR,WRITE,SIMINTEREST,SIMPAPER
 
 	}
 
